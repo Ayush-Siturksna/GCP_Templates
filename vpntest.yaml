@@ -1,0 +1,18 @@
+
+
+
+
+imports:
+  - path: vpntest.py
+    name: vpntest.py
+
+resources:
+  - name: test-vpn
+    type: vpntest.py
+    properties:
+      region: asia-southeast1
+      network: vpc-hec99-sap
+      peerAddress:  1.2.3.4
+      localTrafficSelector: ['192.168.1.0/24']
+      sharedSecret: SecretPassw0rd
+      name: hec55-clg
