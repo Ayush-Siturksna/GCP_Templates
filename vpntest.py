@@ -7,7 +7,7 @@ def generate_config(context):
 
     number= context.properties['number1']
     properties = context.properties
-    array1=context.properties['localTrafficSelector']
+    array1=context.properties['remoteIpranges']
     project_id = properties.get('project', context.env['project'])
 
     network = context.properties.get('networkURL', generate_network_uri(
@@ -166,8 +166,8 @@ def generate_config(context):
                         '$(ref.' + target_vpn_gateway + '.selfLink)',
                     'localTrafficSelector':
                         context.properties['localTrafficSelector'],
-                    # 'remoteTrafficSelector':
-                    #     context.properties['remoteTrafficSelector'],
+                    'remoteTrafficSelector':
+                        context.properties['remoteTrafficSelector'],
 
                 },
                 'metadata': {
@@ -180,7 +180,7 @@ def generate_config(context):
             
             ]
         )
-    length = len(context.properties['localTrafficSelector'])
+    length = len(context.properties['remoteIpranges'])
     for i in range(length):  
         resources.extend([     {      
                    'name': 'route-'+vpn_tunnel + '-' + str(i) ,
