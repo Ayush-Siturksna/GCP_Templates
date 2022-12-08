@@ -5,27 +5,26 @@
 def generate_config(context):
     """ Entry point for the deployment resources. """
 
-    number='1'
+    number= context.properties['number1']
     properties = context.properties
-    # array1=context.properties['localTrafficSelector']
+    array1=context.properties['localTrafficSelector']
     project_id = properties.get('project', context.env['project'])
 
     network = context.properties.get('networkURL', generate_network_uri(
         project_id,
         context.properties.get('network','')
     ))
-    target_vpn_gateway =   'cvg-'+context.properties['name']+number
+    target_vpn_gateway =   'cvg-'+context.properties['name']+'-'+number
     esp_rule = target_vpn_gateway + '-esp-rule'
     udp_500_rule = target_vpn_gateway  + '-udp-500-rule'
     udp_4500_rule = target_vpn_gateway + '-udp-4500-rule'
-    vpn_tunnel =  'vpn-'+context.properties['name']+ number
-    route_test=  'route-'+vpn_tunnel
+    vpn_tunnel =  'vpn-'+context.properties['name']+'-'+number
     resources = []
     if 'ipAddress' in context.properties:
         ip_address = context.properties['ipAddress']
         static_ip = ''
     else:
-        static_ip =  'pip-cvg-'+context.properties['name']+ number
+        static_ip =  'pip-cvg-'+context.properties['name']+'-'+ number
         resources.append({
             # The reserved address resource.
             'name': static_ip,
@@ -175,17 +174,23 @@ def generate_config(context):
                     'dependsOn': [esp_rule, udp_500_rule, udp_4500_rule]
                 }
             }
-            , 
             
-             {      
-                   'name': route_test,
+           
+            
+            
+            ]
+        )
+    length = len(context.properties['localTrafficSelector'])
+    for i in range(length):  
+        resources.extend([     {      
+                   'name': 'route-'+vpn_tunnel + '-' + str(i) ,
                    
                    'type': 'gcp-types/compute-v1:routes',
                    'properties': {
-                    'name': route_test,
+                    'name': 'route-'+vpn_tunnel + '-' + str(i) ,
                     'description':
                         'A route',
-                    'destRange': '192.1681.0/24',
+                    'destRange': array1[i],
                     'network': network,
                     'nextHopVpnTunnel': '$(ref.' + vpn_tunnel + '.selfLink)',
                     'priority': 1000
@@ -197,11 +202,7 @@ def generate_config(context):
                    'metadata': {
                     'dependsOn': [vpn_tunnel]
                    }
-               } 
-            
-            
-            ]
-        )
+               } ])
 
 
         # resources.append(
