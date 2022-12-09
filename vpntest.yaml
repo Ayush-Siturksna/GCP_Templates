@@ -14,9 +14,12 @@ resources:
       region: asia-southeast1
       network: vpc-hec99-sap
       peerAddress:  1.2.3.4
-      localTrafficSelector: ['0.0.0.0/0']
-      remoteTrafficSelector: ['0.0.0.0/0']
-      remoteIpranges: ['192.168.1.0/24','192.168.3.0/24']
+      localTrafficSelector: ['192.168.5.0/24']
+      remoteTrafficSelector: ['192.168.3.0/24','192.168.1.0/24']
       sharedSecret: SecretPassw0rd
-      name: hec55-clg
+      custstring: hec55-clg
       number1: '1'
+      type : 'HA'
+      gatewayname: 'vpngw-hec99-sap-01'
+      googleasn: 64512
+      peerasn: 65000
