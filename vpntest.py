@@ -145,25 +145,26 @@ def generate_config(context):
     else:
         # Create static routing VPN U
 
-        if 'ipAddress' in context.properties:
-            ip_address = context.properties['ipAddress']
-            static_ip = ''
-        else:
-            static_ip =  'pip-cvg-'+context.properties['custstring']+'-'+ number
-            resources.append({
-                # The reserved address resource. S
-                'name': static_ip,
-                # https://cloud.google.com/compute/docs/reference/rest/v1/addressesahusy
-                'type': 'gcp-types/compute-v1:addresses',
-                'properties': {
-                    'name': properties.get('custstring', static_ip),
-                    'project': project_id,
-                    'region': context.properties['region']
-                }
-            })
-            ip_address = '$(ref.' + static_ip + '.address)'
+        
 
         if context.properties['FreshClassicSetup']==1:
+                if 'ipAddress' in context.properties:
+                    ip_address = context.properties['ipAddress']
+                    static_ip = ''
+                else:
+                    static_ip =  'pip-cvg-'+context.properties['custstring']+'-'+ number
+                    resources.append({
+                        # The reserved address resource. S
+                        'name': static_ip,
+                        # https://cloud.google.com/compute/docs/reference/rest/v1/addressesahusy
+                        'type': 'gcp-types/compute-v1:addresses',
+                        'properties': {
+                            'name': properties.get('custstring', static_ip),
+                            'project': project_id,
+                            'region': context.properties['region']
+                        }
+                    })
+                    ip_address = '$(ref.' + static_ip + '.address)'
                 resources.extend([
                     {
                         # The target VPN gateway resource. H
