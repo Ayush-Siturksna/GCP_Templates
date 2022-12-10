@@ -11,6 +11,11 @@ resources:
     type: vpntest.py
     
     properties:
+      # type: 'route'
+      # type: 'policy'
+      type : 'HA'
+      FreshClassicSetup: 1
+      number1: '1'
       region: asia-southeast1
       network: vpc-hec99-sap
       peerAddress:  1.2.3.4
@@ -18,8 +23,6 @@ resources:
       remoteTrafficSelector: ['192.168.3.0/24','192.168.1.0/24']
       sharedSecret: SecretPassw0rd
       custstring: hec55-clg
-      number1: '1'
-      type : 'HA'
       gatewayname: 'vpngw-hec99-sap-01'
       googleasn: 64512
       peerasn: 65000
