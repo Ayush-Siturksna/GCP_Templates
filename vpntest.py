@@ -2,13 +2,17 @@
 """This template creates a VPN tunnel, gateway, and forwarding rules."""
 
 
+
+
+
 def generate_config(context):
     """ Entry point for the deployment resources.G """
-
+   
     number= context.properties['number1']
     properties = context.properties
     array1=context.properties['remoteTrafficSelector']
     project_id = properties.get('project', context.env['project'])
+    
 
     network = context.properties.get('networkURL', generate_network_uri(
         project_id,
@@ -18,6 +22,7 @@ def generate_config(context):
     gateway_Uri='https://compute.googleapis.com/compute/v1/projects/'+context.env['project']+'/regions/'+context.properties['region']+'/targetVpnGateways/'+context.properties['gatewayname']
     target_vpn_gateway =   'cvg-'+context.properties['custstring']+'-'+number
     target_vpn_gateway_uri=''
+    ip_address='null'
     esp_rule = target_vpn_gateway + '-esp-rule'
     udp_500_rule = target_vpn_gateway  + '-udp-500-rule'
     udp_4500_rule = target_vpn_gateway + '-udp-4500-rule'
@@ -142,12 +147,12 @@ def generate_config(context):
              
             
             ])
-    else:
+    elif (context.properties['type']=='route')|(context.properties['type']=='policy'):
         # Create static routing VPN U
 
         
 
-        if context.properties['FreshClassicSetup']==1:
+        if context.properties['FreshClassicSetup']=='yes':
                 if 'ipAddress' in context.properties:
                     ip_address = context.properties['ipAddress']
                     static_ip = ''
@@ -159,7 +164,7 @@ def generate_config(context):
                         # https://cloud.google.com/compute/docs/reference/rest/v1/addressesahusy
                         'type': 'gcp-types/compute-v1:addresses',
                         'properties': {
-                            'name': properties.get('custstring', static_ip),
+                            'name': static_ip,
                             'project': project_id,
                             'region': context.properties['region']
                         }
@@ -289,7 +294,7 @@ def generate_config(context):
                         'destRange': array1[i],
                         'network': network,
                         'nextHopVpnTunnel': '$(ref.' + vpn_tunnel + '.selfLink)',
-                        'priority': 1000
+                        'priority': context.properties['routepriority']
                         
 
                     } ,
@@ -317,22 +322,24 @@ def generate_config(context):
                 
         #      ,
         # )
+  
 
 
 
     return {
         'resources':
-            resources,
+            resources, 
+
         'outputs':
-            [
+            [  
                
                 {
                     'name': 'vpnTunnel',
-                    'value': vpn_tunnel
+                    'value': vpn_tunnel+ip_address
                 },
                 {
                     'name': 'vpnTunnelUri',
-                    'value': '$(ref.'+vpn_tunnel+'.selfLink)'
+                    'value': ''
                 }
             ]
     }

@@ -11,18 +11,20 @@ resources:
     type: vpntest.py
     
     properties:
-      # type: 'route'
-      # type: 'policy'
-      type : 'HA'
-      FreshClassicSetup: 1
-      number1: '1'
-      region: asia-southeast1
-      network: vpc-hec99-sap
-      peerAddress:  1.2.3.4
-      localTrafficSelector: ['192.168.5.0/24']
-      remoteTrafficSelector: ['192.168.3.0/24','192.168.1.0/24']
-      sharedSecret: SecretPassw0rd
-      custstring: hec55-clg
-      gatewayname: 'vpngw-hec99-sap-01'
-      googleasn: 64512
-      peerasn: 65000
+    
+      type : 'HA'  #type is mandatory choose among 1.HA ,2.route,3.policy
+      FreshClassicSetup: 'yes' #mandatory if route based and policy based as type.
+      number1: '1' # number of vpn which is to be deployed with same name schema.
+      region: asia-southeast1 #region is mandatory
+      network: vpc-hec99-sap #vpc name in which vpn is deployed
+      peerAddress:  1.2.3.4 #peer ip address 
+      localTrafficSelector: ['0.0.0.0/0'] #mandatoy if policy based
+      remoteTrafficSelector: ['192.168.3.0/24','192.168.1.0/24']  #mandatory if type is route/policy
+      routepriority: 1000 #mandatory if route/policy or needs to deploy with different priority than defaut(1000)
+      sharedSecret: SecretPassw0rd #mandatory for all types
+      custstring: hec55-clg #mandatory for all types
+      gatewayname: 'vpngw-hec99-sap-01' # mandatory if FreshClassicSetup='no'  
+      googleasn: 64512 #mandatory for type HA only
+      peerasn: 65000 #mandatory for type HA only
+
+  
