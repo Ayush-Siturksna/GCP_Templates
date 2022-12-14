@@ -2,7 +2,7 @@
 """This template creates a VPN tunnel, gateway, and forwarding rules."""
 
 
-
+type='HA'
 
 
 def generate_config(context):
