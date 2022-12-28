@@ -5,18 +5,22 @@ import requests
 import json
 import google.auth
 import google.auth.transport.requests
-from apiconfig3 import *
 
 
 
 
-project= 'sap-hec-gcp-0341'
-ip='10.10.128.86,10.10.128.30'
+
+project= 'sap-mce-devnetops-test2'
+custstring= 'hecayg'
+number='1'
+port=44380
+env='prod'
+ip='10.238.106.2'
 iparray=ip.split(',')
 region = 'asia-southeast1'
 routepriority= 990
-custstring= 'hecayg'
-number='1'
+
+
 vpcnetwork='vpc-hec99-sap'
 
 
@@ -35,7 +39,7 @@ networkurl='https://compute.googleapis.com/compute/v1/projects/{}/global/network
 
 
 
-
+instancegrpname='ig-'+custstring+'-'+env+'-'+number
 ipname='pip-cvg-'+custstring+'-'+ number
 gatewayname= 'cvg-'+custstring+'-'+number
 
@@ -54,13 +58,7 @@ headers = {'Authorization': 'Bearer ' + token}
 
 
 
-routedata={
-  "destRange": "192.168.4.0/24",
-  "name": "testroute3",
-  "network": "projects/sap-mce-devnetops-test2/global/networks/vpc-hec99-sap",
-  "nextHopVpnTunnel": "projects/"+project+"/regions/"+region+"/vpnTunnels/con-hec99-sap-01",
-  "priority": routepriority
-}
+
 
 
 addressdata={
@@ -135,4 +133,46 @@ for ips in iparray:
      network.append(array[3])
 
 
-print(network)
+zn=zones[0]
+
+index=zn.rfind('/')
+realzone=zn[index+1:]
+
+instancegrpurl= 'https://compute.googleapis.com/compute/v1/projects/{}/zones/{}/instanceGroups'.format(project,realzone)
+
+
+instancegroupdata={
+  
+  "name": instancegrpname,
+  "namedPorts": [
+    {
+      "name": 'htpps'+str(port),
+      "port": port
+    }
+  ],
+  "description": ""
+
+}
+
+instancegrp_req=requests.post(instancegrpurl,json=instancegroupdata, headers=headers)
+
+
+print(instancegrp_req)
+
+instanceadd_url='https://compute.googleapis.com/compute/v1/projects/{}/zones/{}/instanceGroups/{}/addInstances'.format(project,realzone,instancegrpname)
+
+for idx,inst in enumerate(instances):
+  instanceadd_data={
+    
+    "instances": [
+      {
+        "instance": 'https://compute.googleapis.com/compute/v1/projects/{}/zones/{}/instances/{}'.format(project,realzone,instances[idx])
+      }
+    ]
+
+  }
+
+  instanceadd_req=requests.post(instanceadd_url,json=instanceadd_data, headers=headers)
+  print(instanceadd_req)
+
+
