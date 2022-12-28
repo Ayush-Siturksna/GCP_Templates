@@ -40,6 +40,7 @@ networkurl='https://compute.googleapis.com/compute/v1/projects/{}/global/network
 
 
 instancegrpname='ig-'+custstring+'-'+env+'-'+number
+sslpolicy_name='ssl-'+custstring+'-lb'
 ipname='pip-cvg-'+custstring+'-'+ number
 gatewayname= 'cvg-'+custstring+'-'+number
 
@@ -134,9 +135,13 @@ for ips in iparray:
 
 
 zn=zones[0]
+nt=network[0]
+
 
 index=zn.rfind('/')
+nt_index=nt.rfind('/')
 realzone=zn[index+1:]
+realnetwork=nt[nt_index:]
 
 instancegrpurl= 'https://compute.googleapis.com/compute/v1/projects/{}/zones/{}/instanceGroups'.format(project,realzone)
 
@@ -174,5 +179,17 @@ for idx,inst in enumerate(instances):
 
   instanceadd_req=requests.post(instanceadd_url,json=instanceadd_data, headers=headers)
   print(instanceadd_req)
+
+sslpolicy_url='https://compute.googleapis.com/compute/v1/projects/{}/global/sslPolicies'.format(project)
+sslpolicy_data={
+  "name": sslpolicy_name,
+  "profile": "RESTRICTED",
+  "minTlsVersion": "TLS_1_2",
+  "description": "lb ssl policy"
+}
+
+sslpolicy_req=requests.post(sslpolicy_url,json=sslpolicy_data, headers=headers)
+print(sslpolicy_req)
+
 
 
